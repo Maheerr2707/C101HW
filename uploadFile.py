@@ -1,33 +1,32 @@
 import os
 import dropbox
+from pkg_resources import to_filename
 
 class TransferData:
 
+   def __init__(self,access_token):
+       self.accessToken = access_token
+
    def upload_file(self,from_file,to_file):
       dbx = dropbox.Dropbox(self.accessToken)
-      f = open(from_file,'rb')
-      dbx.files_upload(f.read(),to_file)
+      
+      for root, dirs, files in os.walk(from_file, topdown=False):
 
-   def upload_file(self,from_file,to_file):
-        dbx = dropbox.Dropbox(self.accessToken)
-        f = open(from_file,'rb')
-        dbx.files_upload(f.read(),to_file)
+         for to_filename in files:
+            local_path = os.path.join(root,to_filename)
+            relativePath = os.path.relpath(local_path,from_file)
+            dropboxPath = os.path.join(to_file,relativePath)
+
+            f = open(local_path,'rb')
+            dbx.files_upload(f.read(),dropboxPath)
 
 def main():
-    accessToken = "sl.AwsI0bHkoBscvFFZzgjLJUyTH1wAIDfqTbIh4NlzQPJ2NVTVgiykMYtdZhDNMdRoZOFg6RuhJ4YGc9h41kACzaIpgTAaXBFDLLiuYgVYWt7I2uOQmcxANN_Ycywyd2dwdrbA9_s"        
+    accessToken = "sl.Aw5rcT93kIwxq8fjmcjpUB2NBTcBkHXV-5p_sR2fxewTb_tDbTkavfDJibqzxykOBDeDCQLo05zokWp3_g4YR5cmDtaThjGMPs69Kr1dUUugr2HTj060WwcXxnmzMB2CupnnzAI"        
     transferData = TransferData(accessToken)
     file_from = input("Enter the file you want to put in the Dropbox")
     toFile = input("Enter the file you want to save it in the Dropbox")
     transferData.upload_file(file_from,toFile)
     print("file has been executed")
-
-
-for root, dirs, files in os.walk("D:\WHITEHAT JR\C-17", topdown=False):
-
-   for name in files:
-      print(os.path.join(root, name))
-   for name in dirs:
-      print(os.path.join(root, name))
 
 
 main()
